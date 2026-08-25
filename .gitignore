@@ -1,4 +1,1 @@
 .env
-./data
-./logs
-./vectorstore
