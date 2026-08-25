@@ -11,9 +11,9 @@ rag-chatbot/
 ├── logs/                 # SQLite query log (generated)
 ├── config.py             # all tunable parameters live here
 ├── ingest.py             # PDF -> chunks -> embeddings -> FAISS index
-├── rag_chain.py           # retrieval + LLaMA 3 (Groq) generation chain
+├── chain.py              # retrieval + LLaMA 3 (Groq) generation chain
 ├── logger.py              # SQLite logging + latency timer
-├── app.py                 # Streamlit chat UI
+├── interface.py                 # Streamlit chat UI
 ├── dashboard.py            # Streamlit monitoring dashboard
 ├── requirements.txt
 └── .env.example
@@ -46,9 +46,9 @@ rag-chatbot/
                                   dashboard.py (Streamlit)
 ```
 
-Two Streamlit apps sit on top of the same core: `app.py` (the chat interface
+Two Streamlit apps sit on top of the same core: `interface.py` (the chat interface
 end users interact with) and `dashboard.py` (the internal monitoring view).
-Both import `rag_chain.py`, so there is exactly one retrieval/generation
+Both import `chain.py`, so there is exactly one retrieval/generation
 implementation to maintain.
 
 ---
@@ -183,7 +183,7 @@ exist (idempotent, safe to call every request). Each row captures:
 `Timer` is a tiny context manager using `time.perf_counter()` for
 millisecond-precision latency measurement.
 
-### 4.4 Chat UI (`app.py`)
+### 4.4 Chat UI (`interface.py`)
 
 A Streamlit chat app:
 - Caches the loaded vectorstore/chain with `@st.cache_resource` so the
@@ -196,7 +196,7 @@ A Streamlit chat app:
 Run it:
 
 ```bash
-streamlit run app.py
+streamlit run interface.py
 ```
 
 ### 4.5 Monitoring dashboard (`dashboard.py`)
@@ -211,7 +211,7 @@ Reads directly from the SQLite log and renders:
   best-performing configuration" workflow
 - A raw recent-queries table for spot-checking answer quality
 
-Run it (in a second terminal, alongside `app.py`):
+Run it (in a second terminal, alongside `interface.py`):
 
 ```bash
 streamlit run dashboard.py
@@ -231,7 +231,7 @@ cp your_files/*.pdf data/
 python ingest.py
 
 # 4. Launch the chatbot
-streamlit run app.py
+streamlit run interface.py
 
 # 5. In a second terminal, launch monitoring
 streamlit run dashboard.py
